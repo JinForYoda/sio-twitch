@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  rtmp-rtsp-converter:
+    build: .
+    container_name: rtmp-rtsp-converter
+    ports:
+      - "3000:3000"   # Web UI
+      - "1935:1935"   # RTMP
+      - "8554:8554"   # RTSP
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - RTMP_PORT=1935
+      - RTSP_PORT=8554
+      - LOG_LEVEL=info
+      - FFMPEG_LOG_LEVEL=error

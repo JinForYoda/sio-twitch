@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTMP to RTSP Converter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
+        }
+        .stream-card {
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        .stream-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .status-idle { background-color: #6c757d; }
+        .status-running { background-color: #28a745; }
+        .status-error { background-color: #dc3545; }
+        .status-stopped { background-color: #ffc107; color: #212529; }
+        .url-box {
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+        .copy-btn {
+            cursor: pointer;
+        }
+        .header-container {
+            background-color: #343a40;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container text-center">
+            <h1>RTMP to RTSP Converter</h1>
+            <p class="lead">Конвертация видеопотоков из RTMP в RTSP формат</p>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Создать новый поток</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="createStreamForm">
+                            <div class="mb-3">
+                                <label for="streamName" class="form-label">Название потока</label>
+                                <input type="text" class="form-control" id="streamName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="rtmpUrl" class="form-label">RTMP URL (опционально)</label>
+                                <input type="text" class="form-control" id="rtmpUrl" placeholder="rtmp://example.com/live/stream">
+                                <small class="text-muted">Если не указан, будет создан локальный RTMP-адрес</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Создать поток</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Активные потоки</h5>
+                        <button id="refreshBtn" class="btn btn-sm btn-outline-light">Обновить</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="streamsList" class="row">
+                            <!-- Здесь будут отображаться потоки -->
+                            <div class="col-12 text-center py-5" id="noStreamsMessage">
+                                <p class="text-muted">Нет активных потоков</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Как использовать</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>1. Создайте новый поток</h6>
+                        <p>Заполните форму выше, указав название потока и опционально RTMP URL источника.</p>
+                        
+                        <h6>2. Отправьте RTMP-поток</h6>
+                        <p>Используйте OBS Studio или другое программное обеспечение для отправки RTMP-потока на указанный URL.</p>
+                        
+                        <h6>3. Получите доступ к RTSP-потоку</h6>
+                        <p>Используйте VLC или другой RTSP-совместимый плеер для просмотра конвертированного потока.</p>
+                        
+                        <h6>Пример команды для просмотра через VLC:</h6>
+                        <div class="url-box">
+                            vlc rtsp://localhost:8554/live/your-stream-key
+                        </div>
+                        
+                        <h6>Пример команды для просмотра через FFplay:</h6>
+                        <div class="url-box">
+                            ffplay rtsp://localhost:8554/live/your-stream-key
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 mb-3 text-center text-muted">
+            <p>RTMP to RTSP Converter &copy; 2025</p>
+        </footer>
+    </div>
+
+    <!-- Шаблон для карточки потока -->
+    <template id="streamCardTemplate">
+        <div class="col-md-6 stream-card">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="stream-name mb-0"></h5>
+                    <span class="badge status-badge"></span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">RTMP URL:</label>
+                        <div class="d-flex">
+                            <div class="url-box flex-grow-1 rtmp-url"></div>
+                            <button class="btn btn-sm btn-outline-secondary copy-btn ms-2" data-url-type="rtmp">
+                                <i class="bi bi-clipboard"></i> Копировать
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">RTSP URL:</label>
+                        <div class="d-flex">
+                            <div class="url-box flex-grow-1 rtsp-url"></div>
+                            <button class="btn btn-sm btn-outline-secondary copy-btn ms-2" data-url-type="rtsp">
+                                <i class="bi bi-clipboard"></i> Копировать
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <button class="btn btn-success start-btn">Запустить</button>
+                            <button class="btn btn-warning stop-btn">Остановить</button>
+                        </div>
+                        <button class="btn btn-danger delete-btn">Удалить</button>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>Создан: <span class="created-at"></span></small>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
