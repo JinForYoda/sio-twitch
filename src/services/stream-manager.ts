@@ -146,6 +146,12 @@ class StreamManager {
     }
 
     this.streams.delete(streamId);
+
+    // Очищаем счетчик попыток для удаленного потока
+    if (this.converter.clearRetryCounter) {
+      this.converter.clearRetryCounter(streamId);
+    }
+
     logger.info(`Deleted stream ${streamId}`);
 
     return true;

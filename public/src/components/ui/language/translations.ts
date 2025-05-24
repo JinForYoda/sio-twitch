@@ -55,6 +55,10 @@ export const translations = {
     rtspPlayerUrlLabel: 'URL',
     rtspPlayerNote: 'Примечание: Для работы плеера требуется библиотека воспроизведения видео',
     playerError: 'Ошибка инициализации плеера',
+    rtspNotSupported: 'RTSP потоки не поддерживаются напрямую в браузерах.',
+    useExternalPlayer: 'Пожалуйста, используйте внешний плеер, например VLC, для просмотра этого потока.',
+    openInExternalPlayer: 'Открыть во внешнем плеере',
+    externalPlayerNotFound: 'Не удалось открыть внешний плеер. Пожалуйста, установите VLC или другой плеер, поддерживающий RTSP.',
 
     // How To Use
     howToUse: 'Как использовать',
@@ -140,6 +144,10 @@ export const translations = {
     rtspPlayerUrlLabel: 'URL',
     rtspPlayerNote: 'Ескерту: Плеердің жұмыс істеуі үшін бейне ойнату кітапханасы қажет',
     playerError: 'Плеерді іске қосу қатесі',
+    rtspNotSupported: 'RTSP ағындары браузерлерде тікелей қолданылмайды.',
+    useExternalPlayer: 'Бұл ағынды көру үшін VLC сияқты сыртқы ойнатқышты пайдаланыңыз.',
+    openInExternalPlayer: 'Сыртқы ойнатқышта ашу',
+    externalPlayerNotFound: 'Сыртқы ойнатқышты ашу мүмкін болмады. RTSP қолдайтын VLC немесе басқа ойнатқышты орнатыңыз.',
 
     // How To Use
     howToUse: 'Қалай қолдану керек',

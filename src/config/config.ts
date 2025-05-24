@@ -18,6 +18,12 @@ interface Config {
   };
   ffmpeg: {
     logLevel: string;
+    maxRetries: number;
+    retryDelayBase: number; // Base delay in ms for retry calculation
+    reconnectAttempts: number;
+    bufferSize: string;
+    videoBitrate: string;
+    audioBitrate: string;
   };
 }
 
@@ -37,6 +43,12 @@ const config: Config = {
   },
   ffmpeg: {
     logLevel: process.env.FFMPEG_LOG_LEVEL ?? 'error',
+    maxRetries: Number(process.env.FFMPEG_MAX_RETRIES) || 5,
+    retryDelayBase: Number(process.env.FFMPEG_RETRY_DELAY_BASE) || 5000,
+    reconnectAttempts: Number(process.env.FFMPEG_RECONNECT_ATTEMPTS) || 3,
+    bufferSize: process.env.FFMPEG_BUFFER_SIZE ?? '8192k',
+    videoBitrate: process.env.FFMPEG_VIDEO_BITRATE ?? '2000k',
+    audioBitrate: process.env.FFMPEG_AUDIO_BITRATE ?? '128k',
   },
 };
 
