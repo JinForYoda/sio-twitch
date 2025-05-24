@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Stream, StreamStatus } from '@/types/stream'
 import { useToast } from '@/components/ui/use-toast'
 import { useLanguage } from '@/components/ui/language/language-provider'
+import RtspPlayer from './RtspPlayer'
 
 interface StreamCardProps {
   stream: Stream
@@ -19,6 +20,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
   onDelete
 }) => {
   const [isLoading, setIsLoading] = useState(false)
+  const [showPlayer, setShowPlayer] = useState(false)
   const { toast } = useToast()
   const { t } = useLanguage()
 
@@ -63,15 +65,15 @@ const StreamCard: React.FC<StreamCardProps> = ({
     navigator.clipboard.writeText(text)
       .then(() => {
         toast({
-          title: 'Скопировано!',
-          description: `${label} скопирован в буфер обмена`,
+          title: t('copied'),
+          description: t('urlCopied', { label }),
         })
       })
       .catch(err => {
         console.error('Failed to copy:', err)
         toast({
-          title: 'Ошибка',
-          description: 'Не удалось скопировать URL',
+          title: t('error'),
+          description: t('failedToCopy'),
           variant: 'destructive',
         })
       })
@@ -93,13 +95,13 @@ const StreamCard: React.FC<StreamCardProps> = ({
   const getStatusText = () => {
     switch (stream.status) {
       case StreamStatus.RUNNING:
-        return 'Работает'
+        return t('statusRunning')
       case StreamStatus.ERROR:
-        return 'Ошибка'
+        return t('statusError')
       case StreamStatus.STOPPED:
-        return 'Остановлен'
+        return t('statusStopped')
       default:
-        return 'Ожидание'
+        return t('statusIdle')
     }
   }
 
@@ -113,12 +115,12 @@ const StreamCard: React.FC<StreamCardProps> = ({
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Создан: {new Date(stream.createdAt).toLocaleString()}
+          {t('createdAt')}: {new Date(stream.createdAt).toLocaleString()}
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
-          <p className="text-sm font-medium mb-1">RTMP URL:</p>
+          <p className="text-sm font-medium mb-1">{t('rtmpUrlLabel')}</p>
           <div className="flex items-center">
             <div className="bg-muted p-2 text-xs rounded flex-1 overflow-x-auto whitespace-nowrap">
               {stream.rtmpUrl}
@@ -129,13 +131,13 @@ const StreamCard: React.FC<StreamCardProps> = ({
               className="ml-2"
               onClick={() => copyToClipboard(stream.rtmpUrl, 'RTMP URL')}
             >
-              Копировать
+              {t('copy')}
             </Button>
           </div>
         </div>
 
         <div>
-          <p className="text-sm font-medium mb-1">RTSP URL:</p>
+          <p className="text-sm font-medium mb-1">{t('rtspUrlLabel')}</p>
           <div className="flex items-center">
             <div className="bg-muted p-2 text-xs rounded flex-1 overflow-x-auto whitespace-nowrap">
               {stream.rtspUrl}
@@ -146,8 +148,25 @@ const StreamCard: React.FC<StreamCardProps> = ({
               className="ml-2"
               onClick={() => copyToClipboard(stream.rtspUrl, 'RTSP URL')}
             >
-              Копировать
+              {t('copy')}
             </Button>
+          </div>
+
+          <div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="mt-2"
+              onClick={() => setShowPlayer(!showPlayer)}
+            >
+              {showPlayer ? t('hidePlayer') : t('showPlayer')}
+            </Button>
+
+            {showPlayer && stream.status === StreamStatus.RUNNING && (
+              <div className="mt-3">
+                <RtspPlayer rtspUrl={stream.rtspUrl} className="rounded overflow-hidden" />
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
@@ -159,7 +178,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
             onClick={handleStart}
             disabled={isLoading || stream.status === StreamStatus.RUNNING}
           >
-            Запустить
+            {t('start')}
           </Button>
           <Button
             variant="secondary"
@@ -167,7 +186,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
             onClick={handleStop}
             disabled={isLoading || stream.status !== StreamStatus.RUNNING}
           >
-            Остановить
+            {t('stop')}
           </Button>
         </div>
         <Button
@@ -176,7 +195,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
           onClick={handleDelete}
           disabled={isLoading}
         >
-          Удалить
+          {t('delete')}
         </Button>
       </CardFooter>
     </Card>
