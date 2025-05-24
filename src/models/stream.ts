@@ -3,10 +3,10 @@ export interface Stream {
   name: string;
   rtmpUrl: string;
   rtspUrl: string;
+  hlsUrl: string;
   status: StreamStatus;
   createdAt: Date;
   updatedAt: Date;
-  ffmpegProcess?: any; // Процесс FFmpeg
 }
 
 export enum StreamStatus {

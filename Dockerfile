@@ -1,7 +1,9 @@
 FROM node:18-alpine
 
-# Установка FFmpeg
-RUN apk add --no-cache ffmpeg
+# Установка необходимых зависимостей
+RUN apk add --no-cache git g++ make cmake perl-dev openssl-dev
+# Установка SRS из предварительно собранного пакета
+RUN apk add --no-cache nginx
 
 # Создание рабочей директории
 WORKDIR /app

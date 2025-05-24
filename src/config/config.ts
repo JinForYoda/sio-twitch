@@ -19,6 +19,7 @@ interface Config {
   ffmpeg: {
     logLevel: string;
   };
+  logDir: string;
 }
 
 const config: Config = {
@@ -38,6 +39,7 @@ const config: Config = {
   ffmpeg: {
     logLevel: process.env.FFMPEG_LOG_LEVEL ?? 'error',
   },
+  logDir: process.env.LOG_DIR || './logs',
 };
 
 export default config;

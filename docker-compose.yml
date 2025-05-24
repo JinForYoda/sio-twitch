@@ -5,10 +5,8 @@ services:
     build: .
     container_name: rtmp-rtsp-converter
     ports:
-      - "3000:3000"   # Backend API
-      - "1935:1935"   # RTMP
-      - "8554:8554"   # RTSP
-      - "5173:5173"   # Frontend
+      - '3000:3000' # Backend API
+      - '5173:5173' # Frontend
     volumes:
       - ./logs:/app/logs
     restart: unless-stopped
@@ -16,6 +14,30 @@ services:
       - PORT=3000
       - RTMP_PORT=1935
       - RTSP_PORT=8554
-      - HTTP_PORT=8080
+      - HTTP_PORT=8888
       - LOG_LEVEL=info
-      - FFMPEG_LOG_LEVEL=error
+      - DOCKER_ENV=true
+    depends_on:
+      - mediamtx
+    networks:
+      - stream-network
+
+  mediamtx:
+    image: bluenviron/mediamtx:1.0.0
+    container_name: mediamtx
+    ports:
+      - '1935:1935' # RTMP
+      - '8554:8554' # RTSP
+      - '8888:8888' # HLS/WebRTC
+      - '8889:8889' # API
+      - '9997:9997' # MediaMTX API
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml
+      - ./media:/media # Папка для записи медиа-файлов
+    restart: unless-stopped
+    networks:
+      - stream-network
+
+networks:
+  stream-network:
+    driver: bridge

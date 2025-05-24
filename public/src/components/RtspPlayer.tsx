@@ -8,12 +8,12 @@ import ReactPlayer from 'react-player';
  * This component provides a video player for RTSP streams
  */
 interface RtspPlayerProps {
-  rtspUrl: string;
+  url: string;
   autoPlay?: boolean;
   className?: string;
 }
 
-const RtspPlayer: React.FC<RtspPlayerProps> = ({ rtspUrl, autoPlay = true, className = '' }) => {
+const RtspPlayer: React.FC<RtspPlayerProps> = ({ url, autoPlay = true, className = '' }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { t } = useLanguage();
@@ -31,12 +31,14 @@ const RtspPlayer: React.FC<RtspPlayerProps> = ({ rtspUrl, autoPlay = true, class
   };
 
   return (
-    <div className={cn(
-      "rounded-md overflow-hidden bg-black relative", 
-      "border border-border",
-      "min-h-[240px] w-full",
-      className
-    )}>
+    <div
+      className={cn(
+        'rounded-md overflow-hidden bg-black relative',
+        'border border-border',
+        'min-h-[240px] w-full',
+        className,
+      )}
+    >
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-primary-foreground z-10">
           <div className="flex flex-col items-center">
@@ -53,7 +55,7 @@ const RtspPlayer: React.FC<RtspPlayerProps> = ({ rtspUrl, autoPlay = true, class
       )}
 
       <ReactPlayer
-        url={rtspUrl}
+        url={'http://localhost:8888/hls/live/asd_ee488f2b/index.m3u8'}
         playing={autoPlay}
         controls
         width="100%"
@@ -68,10 +70,10 @@ const RtspPlayer: React.FC<RtspPlayerProps> = ({ rtspUrl, autoPlay = true, class
               style: {
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain'
-              }
-            }
-          }
+                objectFit: 'contain',
+              },
+            },
+          },
         }}
       />
     </div>

@@ -78,6 +78,14 @@ class StreamManager {
     return parts[parts.length - 1];
   }
 
+  private getNetworkAddress(): string {
+    // В Docker контейнере используем mediamtx для доступа к MediaMTX серверу
+    if (process.env.DOCKER_ENV === 'true') {
+      return 'mediamtx';
+    }
+    return 'localhost';
+  }
+
   private findStreamByKey(streamKey: string): Stream | undefined {
     for (const stream of this.streams.values()) {
       if (stream.rtmpUrl.endsWith(`/${streamKey}`)) {
@@ -92,26 +100,35 @@ class StreamManager {
     const streamKey =
       options.name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + id.substring(0, 8);
 
-    const rtmpUrl = this.rtmpServer.getStreamUrl(streamKey);
-    const rtspUrl = `rtsp://localhost:${config.rtsp.port}/live/${streamKey}`;
+    // Генерируем URL для доступа к MediaMTX
+    const host = this.getNetworkAddress();
+
+    // Используем указанный пользователем URL или генерируем новый на основе MediaMTX
+    const rtmpUrl = options.rtmpUrl || `rtmp://${host}:${config.rtmp.port}/live/${streamKey}`;
+
+    // URL для RTSP потока
+    const rtspUrl = `rtsp://${host}:${config.rtsp.port}/live/${streamKey}`;
 
     const stream: Stream = {
       id,
       name: options.name,
-      rtmpUrl: options.rtmpUrl || rtmpUrl,
+      rtmpUrl,
       rtspUrl,
+      hlsUrl: `http://${host}:8888/hls/live/${streamKey}/index.m3u8`,
       status: StreamStatus.IDLE,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     this.streams.set(id, stream);
-    logger.info(`Created new stream: ${id}, RTMP: ${stream.rtmpUrl}, RTSP: ${stream.rtspUrl}`);
+    logger.info(`Created new stream: ${id}`);
+    logger.info(`RTMP input: ${stream.rtmpUrl}`);
+    logger.info(`RTSP output: ${stream.rtspUrl}`);
 
     return stream;
   }
 
-  public startStream(streamId: string): boolean {
+  public async startStream(streamId: string): Promise<boolean> {
     const stream = this.streams.get(streamId);
 
     if (!stream) {
@@ -119,11 +136,11 @@ class StreamManager {
       return false;
     }
 
-    return this.converter.startConversion(stream);
+    return await this.converter.startConversion(stream);
   }
 
-  public stopStream(streamId: string): boolean {
-    return this.converter.stopConversion(streamId);
+  public async stopStream(streamId: string): Promise<boolean> {
+    return await this.converter.stopConversion(streamId);
   }
 
   public getStream(streamId: string): Stream | undefined {

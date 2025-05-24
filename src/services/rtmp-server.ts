@@ -18,9 +18,22 @@ class RtmpServer extends EventEmitter {
         ping_timeout: 60,
       },
       http: {
-        port: 8000,
+        port: config.http.port,
         allow_origin: '*',
-        mediaroot: '../../media',
+        mediaroot: './media',
+      },
+      trans: {
+        ffmpeg: '/usr/bin/ffmpeg',
+        tasks: [
+          {
+            app: 'live',
+            mp4: false,
+            hls: true,
+            hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
+            dash: false,
+            dashFlags: '[f=dash:window_size=3:extra_window_size=5]',
+          },
+        ],
       },
     });
 

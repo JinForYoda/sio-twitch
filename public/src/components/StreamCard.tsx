@@ -1,109 +1,105 @@
-import React, { useState } from 'react'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Stream, StreamStatus } from '@/types/stream'
-import { useToast } from '@/components/ui/use-toast'
-import { useLanguage } from '@/components/ui/language/language-provider'
-import RtspPlayer from './RtspPlayer'
+import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Stream, StreamStatus } from '@/types/stream';
+import { useToast } from '@/components/ui/use-toast';
+import { useLanguage } from '@/components/ui/language/language-provider';
+import RtspPlayer from './RtspPlayer';
 
 interface StreamCardProps {
-  stream: Stream
-  onStart: (id: string) => Promise<void>
-  onStop: (id: string) => Promise<void>
-  onDelete: (id: string) => Promise<void>
+  stream: Stream;
+  onStart: (id: string) => Promise<void>;
+  onStop: (id: string) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
 }
 
-const StreamCard: React.FC<StreamCardProps> = ({
-  stream,
-  onStart,
-  onStop,
-  onDelete
-}) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPlayer, setShowPlayer] = useState(false)
-  const { toast } = useToast()
-  const { t } = useLanguage()
+const StreamCard: React.FC<StreamCardProps> = ({ stream, onStart, onStop, onDelete }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPlayer, setShowPlayer] = useState(false);
+  const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleStart = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await onStart(stream.id)
+      await onStart(stream.id);
     } catch (error) {
-      console.error('Error starting stream:', error)
+      console.error('Error starting stream:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleStop = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await onStop(stream.id)
+      await onStop(stream.id);
     } catch (error) {
-      console.error('Error stopping stream:', error)
+      console.error('Error stopping stream:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
     if (!window.confirm(t('deleteConfirm'))) {
-      return
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await onDelete(stream.id)
+      await onDelete(stream.id);
     } catch (error) {
-      console.error('Error deleting stream:', error)
+      console.error('Error deleting stream:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard
+      .writeText(text)
       .then(() => {
         toast({
           title: t('copied'),
           description: t('urlCopied', { label }),
-        })
+        });
       })
-      .catch(err => {
-        console.error('Failed to copy:', err)
+      .catch((err) => {
+        console.error('Failed to copy:', err);
         toast({
           title: t('error'),
           description: t('failedToCopy'),
           variant: 'destructive',
-        })
-      })
-  }
+        });
+      });
+  };
 
   const getStatusBadgeClass = () => {
     switch (stream.status) {
       case StreamStatus.RUNNING:
-        return 'bg-green-500 text-white'
+        return 'bg-green-500 text-white';
       case StreamStatus.ERROR:
-        return 'bg-red-500 text-white'
+        return 'bg-red-500 text-white';
       case StreamStatus.STOPPED:
-        return 'bg-yellow-500 text-black'
+        return 'bg-yellow-500 text-black';
       default:
-        return 'bg-gray-500 text-white'
+        return 'bg-gray-500 text-white';
     }
-  }
+  };
 
   const getStatusText = () => {
     switch (stream.status) {
       case StreamStatus.RUNNING:
-        return t('statusRunning')
+        return t('statusRunning');
       case StreamStatus.ERROR:
-        return t('statusError')
+        return t('statusError');
       case StreamStatus.STOPPED:
-        return t('statusStopped')
+        return t('statusStopped');
       default:
-        return t('statusIdle')
+        return t('statusIdle');
     }
-  }
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -125,9 +121,9 @@ const StreamCard: React.FC<StreamCardProps> = ({
             <div className="bg-muted p-2 text-xs rounded flex-1 overflow-x-auto whitespace-nowrap">
               {stream.rtmpUrl}
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="ml-2"
               onClick={() => copyToClipboard(stream.rtmpUrl, 'RTMP URL')}
             >
@@ -142,9 +138,9 @@ const StreamCard: React.FC<StreamCardProps> = ({
             <div className="bg-muted p-2 text-xs rounded flex-1 overflow-x-auto whitespace-nowrap">
               {stream.rtspUrl}
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="ml-2"
               onClick={() => copyToClipboard(stream.rtspUrl, 'RTSP URL')}
             >
@@ -153,9 +149,9 @@ const StreamCard: React.FC<StreamCardProps> = ({
           </div>
 
           <div>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="mt-2"
               onClick={() => setShowPlayer(!showPlayer)}
             >
@@ -164,7 +160,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
 
             {showPlayer && stream.status === StreamStatus.RUNNING && (
               <div className="mt-3">
-                <RtspPlayer rtspUrl={stream.rtspUrl} className="rounded overflow-hidden" />
+                <RtspPlayer url={stream.hlsUrl} className="rounded overflow-hidden" />
               </div>
             )}
           </div>
@@ -189,17 +185,12 @@ const StreamCard: React.FC<StreamCardProps> = ({
             {t('stop')}
           </Button>
         </div>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={handleDelete}
-          disabled={isLoading}
-        >
+        <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isLoading}>
           {t('delete')}
         </Button>
       </CardFooter>
     </Card>
-  )
-}
+  );
+};
 
-export default StreamCard
+export default StreamCard;

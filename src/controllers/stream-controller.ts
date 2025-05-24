@@ -54,10 +54,10 @@ class StreamController {
     }
   };
 
-  public startStream = (req: Request, res: Response): void => {
+  public startStream = async (req: Request, res: Response): Promise<void> => {
     try {
       const streamId = req.params.id;
-      const success = this.streamManager.startStream(streamId);
+      const success = await this.streamManager.startStream(streamId);
 
       if (!success) {
         res.status(400).json({ error: 'Failed to start stream' });
@@ -71,10 +71,10 @@ class StreamController {
     }
   };
 
-  public stopStream = (req: Request, res: Response): void => {
+  public stopStream = async (req: Request, res: Response): Promise<void> => {
     try {
       const streamId = req.params.id;
-      const success = this.streamManager.stopStream(streamId);
+      const success = await this.streamManager.stopStream(streamId);
 
       if (!success) {
         res.status(400).json({ error: 'Failed to stop stream' });
