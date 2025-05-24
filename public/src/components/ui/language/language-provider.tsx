@@ -37,8 +37,8 @@ export function LanguageProvider({
 
   const t = (key: string, params?: Record<string, string>): string => {
     const keys = key.split('.')
-    let value = translations[language]
-    
+    let value: any = translations[language]
+
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
         value = value[k as keyof typeof value]
@@ -46,18 +46,18 @@ export function LanguageProvider({
         return key // Return the key if translation not found
       }
     }
-    
+
     if (typeof value !== 'string') {
       return key
     }
-    
+
     // Replace parameters in the string if provided
     if (params) {
-      return Object.entries(params).reduce((acc, [paramKey, paramValue]) => {
+      return Object.entries(params).reduce<string>((acc, [paramKey, paramValue]) => {
         return acc.replace(`{${paramKey}}`, paramValue)
-      }, value)
+      }, value as string)
     }
-    
+
     return value
   }
 
@@ -79,10 +79,10 @@ export function LanguageProvider({
 
 export const useLanguage = () => {
   const context = useContext(LanguageContext)
-  
+
   if (context === undefined) {
     throw new Error('useLanguage must be used within a LanguageProvider')
   }
-  
+
   return context
 }
