@@ -13,6 +13,9 @@ interface Config {
   rtsp: {
     port: number;
   };
+  http: {
+    port: number;
+  };
   ffmpeg: {
     logLevel: string;
   };
@@ -29,8 +32,11 @@ const config: Config = {
   rtsp: {
     port: Number(process.env.RTSP_PORT),
   },
+  http: {
+    port: Number(process.env.HTTP_PORT) || 8080,
+  },
   ffmpeg: {
-    logLevel: process.env.FFMPEG_LOG_LEVEL,
+    logLevel: process.env.FFMPEG_LOG_LEVEL ?? 'error',
   },
 };
 

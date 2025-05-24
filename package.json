@@ -37,6 +37,7 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@types/node-media-server": "^2.3.7",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
     "eslint": "^9.27.0",
