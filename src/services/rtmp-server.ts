@@ -20,6 +20,7 @@ class RtmpServer extends EventEmitter {
       http: {
         port: 8000,
         allow_origin: '*',
+        mediaroot: '../../media',
       },
     });
 
