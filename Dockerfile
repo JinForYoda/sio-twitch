@@ -41,14 +41,9 @@ WORKDIR /app
 # Открытие портов (бэкенд, RTMP, RTSP, frontend)
 EXPOSE 3000 1935 8554 5173
 
-# Создаем скрипт для запуска обоих сервисов
-RUN echo '#!/bin/sh\n\
-cd /app/public && npm run preview -- --host 0.0.0.0 --port 5173 & \n\
-FRONTEND_PID=$!\n\
-cd /app\n\
-trap "kill $FRONTEND_PID; exit 0" SIGTERM SIGINT\n\
-npm start\n\
-' > /app/start.sh && chmod +x /app/start.sh
+# Копируем скрипт запуска
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 # Запуск приложения
 CMD ["/app/start.sh"]
