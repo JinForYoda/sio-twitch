@@ -3,6 +3,7 @@ import axios from 'axios';
 import { EventEmitter } from 'events';
 import { StreamModel } from '../models/Stream';
 import logger from '../utils/logger';
+import config from 'config/config';
 
 class Converter extends EventEmitter {
   private mediaServerApiUrl: string;
@@ -10,11 +11,8 @@ class Converter extends EventEmitter {
 
   constructor() {
     super();
-    // Определяем URL API MediaMTX сервера
-    // В Docker используем имя сервиса или IP, локально - localhost
-    // Используем IP-адрес вместо имени хоста, чтобы избежать проблем с DNS
-    this.host = process.env.HOST || 'localhost';
-    this.mediaServerApiUrl = `http://${this.host}:9997/v3`;
+    this.host = config.host;
+    this.mediaServerApiUrl = config.mediamtx.apiUrl;
   }
 
   public async startConversion(stream: StreamModel): Promise<boolean> {
@@ -34,7 +32,9 @@ class Converter extends EventEmitter {
       // Проверяем статус API MediaMTX
       try {
         // Проверяем, доступен ли API MediaMTX
-        const configResponse = await axios.get(`${this.mediaServerApiUrl}/config/global/get`);
+        const configResponse = await axios.get(`${this.mediaServerApiUrl}/config/global/get`, {
+          family: 4
+        });
         logger.info(`MediaMTX API status: ${configResponse.status}`);
 
         // Проверяем, существует ли уже поток с таким ключом

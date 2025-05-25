@@ -21,7 +21,7 @@ interface Config {
     port: number;
   };
   mediamtx: {
-    apiPort: number;
+    apiUrl: string;
   };
   logDir: string;
 }
@@ -45,7 +45,7 @@ const config: Config = {
     port: Number(process.env.WEBRTC_PORT) || 8889,
   },
   mediamtx: {
-    apiPort: Number(process.env.MEDIAMTX_API_PORT) || 9997,
+    apiUrl: `http://${process.env.MEDIAMTX_API_HOST || 'mediamtx'}:${Number(process.env.MEDIAMTX_API_PORT) || 9997}/v3`,
   },
   logDir: process.env.LOG_DIR || './logs',
 };

@@ -32,8 +32,8 @@ class MediaMtxService extends EventEmitter {
     super();
     // Используем имя сервиса 'mediamtx' как хост в Docker среде
     // или 127.0.0.1 для локальной разработки
-    this.host = process.env.DOCKER_ENV === 'true' ? 'mediamtx' : '127.0.0.1';
-    this.baseUrl = `http://${this.host}:${config.mediamtx.apiPort}/${this.apiVersion}`;
+    this.host = config.host;
+    this.baseUrl = config.mediamtx.apiUrl;
 
     logger.info(`MediaMTX service initialized with API at ${this.baseUrl}`);
   }
@@ -43,7 +43,9 @@ class MediaMtxService extends EventEmitter {
    */
   async getPaths(): Promise<MediaMtxPath[] | null> {
     try {
-      const response = await axios.get(`${this.baseUrl}/paths/list`);
+      const response = await axios.get(`${this.baseUrl}/paths/list`, {
+        family: 4
+      });
       return response.data.items || [];
     } catch (error) {
       logger.warn(`Could not connect to MediaMTX API: ${error}`);
