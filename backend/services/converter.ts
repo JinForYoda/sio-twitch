@@ -1,8 +1,8 @@
-import { Stream, StreamStatus } from '@shared/types/stream';
-import logger from '../utils/logger';
-import { EventEmitter } from 'events';
+import { StreamStatus } from '@shared/types/stream';
 import axios from 'axios';
+import { EventEmitter } from 'events';
 import { StreamModel } from '../models/Stream';
+import logger from '../utils/logger';
 
 class Converter extends EventEmitter {
   private mediaServerApiUrl: string;
@@ -13,7 +13,7 @@ class Converter extends EventEmitter {
     // Определяем URL API MediaMTX сервера
     // В Docker используем имя сервиса или IP, локально - localhost
     // Используем IP-адрес вместо имени хоста, чтобы избежать проблем с DNS
-    this.host = process.env.DOCKER_ENV === 'true' ? 'mediamtx' : 'localhost';
+    this.host = process.env.HOST || 'localhost';
     this.mediaServerApiUrl = `http://${this.host}:9997/v3`;
   }
 

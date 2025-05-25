@@ -18,7 +18,7 @@ services:
       - HTTP_PORT=${HLS_PORT}
       - LOG_LEVEL=info
       - LOG_DIR=./logs
-      - DOCKER_ENV=true
+      - HOST=localhost
     depends_on:
       - mediamtx
     networks:
