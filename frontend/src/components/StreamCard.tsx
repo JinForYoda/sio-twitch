@@ -125,7 +125,7 @@ const StreamCard: React.FC<StreamCardProps> = ({ stream, onStart, onStop, onDele
               variant="ghost"
               size="sm"
               className="ml-2"
-              onClick={() => copyToClipboard(stream.rtmpUrl, 'RTMP URL')}
+              onClick={() => copyToClipboard(stream.rtmpUrl, t('rtmpUrlLabel'))}
             >
               {t('copy')}
             </Button>
@@ -142,7 +142,7 @@ const StreamCard: React.FC<StreamCardProps> = ({ stream, onStart, onStop, onDele
               variant="ghost"
               size="sm"
               className="ml-2"
-              onClick={() => copyToClipboard(stream.rtspUrl, 'RTSP URL')}
+              onClick={() => copyToClipboard(stream.rtspUrl, t('rtspUrlLabel'))}
             >
               {t('copy')}
             </Button>
