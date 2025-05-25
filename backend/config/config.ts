@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 interface Config {
+  host: string;
   server: {
     port: number;
   };
@@ -16,28 +17,35 @@ interface Config {
   http: {
     port: number;
   };
-  ffmpeg: {
-    logLevel: string;
+  webrtc: {
+    port: number;
+  };
+  mediamtx: {
+    apiPort: number;
   };
   logDir: string;
 }
 
 const config: Config = {
+  host: process.env.HOST || 'localhost',
   server: {
-    port: Number(process.env.PORT),
+    port: Number(process.env.PORT) || 3000,
   },
   rtmp: {
-    port: Number(process.env.RTMP_PORT),
-    chunkSize: Number(process.env.RTMP_CHUNK_SIZE),
+    port: Number(process.env.RTMP_PORT) || 1935,
+    chunkSize: Number(process.env.RTMP_CHUNK_SIZE) || 60000,
   },
   rtsp: {
-    port: Number(process.env.RTSP_PORT),
+    port: Number(process.env.RTSP_PORT) || 8554,
   },
   http: {
-    port: Number(process.env.HTTP_PORT) || 8080,
+    port: Number(process.env.HTTP_PORT) || 8888,
   },
-  ffmpeg: {
-    logLevel: process.env.FFMPEG_LOG_LEVEL ?? 'error',
+  webrtc: {
+    port: Number(process.env.WEBRTC_PORT) || 8889,
+  },
+  mediamtx: {
+    apiPort: Number(process.env.MEDIAMTX_API_PORT) || 9997,
   },
   logDir: process.env.LOG_DIR || './logs',
 };

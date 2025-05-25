@@ -1,64 +1,22 @@
-# Makefile for sio-twitch project
-BACKEND_DIR := backend
-FRONTEND_DIR := frontend
-DOCKER_IMAGE := rtmp-rtsp-converter
-DOCKER_CONTAINER := rtmp-rtsp-converter
+PHONY: help
+.DEFAULT_GOAL := help
 
-.PHONY: all help install dev dev-frontend dev-backend build build-frontend build-backend start start-frontend start-backend clean docker-build docker-run docker-stop docker-logs docker-shell
+help: ## This help.
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-all: help
+init: down build up
 
-help:
-	@echo "Usage: make [target]"
-	@echo "Targets: install, dev (installs first), dev-frontend (installs first), dev-backend (installs first),"
-	@echo "         build (installs first), start (builds first), clean"
-	@echo "Docker targets: docker-build, docker-run, docker-stop, docker-logs, docker-shell"
+build: ## Build services.
+	docker compose build $(c)
 
-install:
-	cd $(BACKEND_DIR) && npm install
-	cd $(FRONTEND_DIR) && npm install
+up: ## Create and start services.
+	docker compose up -d $(c)
 
-dev-frontend: install
-	cd $(FRONTEND_DIR) && npm run dev
+restart: ## Restart services.
+	docker compose restart $(c)
 
-dev-backend: install
-	cd $(BACKEND_DIR) && npm run dev
+down: ## Stop and remove containers and volumes.
+	docker compose down -v $(c)
 
-dev: install
-	(cd $(FRONTEND_DIR) && npm run dev) & (cd $(BACKEND_DIR) && npm run dev) & wait
-
-build-frontend: install
-	cd $(FRONTEND_DIR) && npm run build
-
-build-backend: install
-	cd $(BACKEND_DIR) && npm run build
-
-build: build-frontend build-backend
-
-start-frontend: build-frontend
-	cd $(FRONTEND_DIR) && npm run preview
-
-start-backend: build-backend
-	cd $(BACKEND_DIR) && npm start
-
-start: build
-	(cd $(FRONTEND_DIR) && npm run preview) & (cd $(BACKEND_DIR) && npm start) & wait
-
-clean:
-	rm -rf $(BACKEND_DIR)/dist $(FRONTEND_DIR)/dist
-
-# Docker targets
-docker-build:
-	docker-compose build
-
-docker-run:
-	docker-compose up -d
-
-docker-stop:
-	docker-compose down
-
-docker-logs:
-	docker-compose logs -f
-
-docker-shell:
-	docker exec -it $(DOCKER_CONTAINER) /bin/sh
+down-force:
+	docker compose down -v --rmi=all --remove-orphans

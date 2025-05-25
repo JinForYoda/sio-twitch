@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  rtmp-rtsp-converter:
+  converter:
     build: .
-    container_name: rtmp-rtsp-converter
+    container_name: converter
     ports:
       - '${API_PORT}:${API_PORT}'
       - '${FRONTEND_PORT}:${FRONTEND_PORT}'
@@ -18,7 +18,7 @@ services:
       - HTTP_PORT=${HLS_PORT}
       - LOG_LEVEL=info
       - LOG_DIR=./logs
-      - DOCKER_ENV=true
+      - HOST=localhost
     depends_on:
       - mediamtx
     networks:

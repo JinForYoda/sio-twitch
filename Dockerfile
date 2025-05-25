@@ -1,6 +1,6 @@
 FROM node:18-alpine
 
-RUN apk add --no-cache g++ make openssl-dev supervisor
+RUN apk add --no-cache g++ make curl openssl-dev supervisor
 
 RUN mkdir -p /etc/supervisor.d/
 COPY supervisord.conf /etc/supervisor.d/supervisord.conf

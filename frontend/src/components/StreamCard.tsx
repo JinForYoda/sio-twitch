@@ -149,15 +149,27 @@ const StreamCard: React.FC<StreamCardProps> = ({ stream, onStart, onStop, onDele
           </div>
 
           <div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-2"
-              onClick={() => setShowPlayer(!showPlayer)}
-            >
-              {showPlayer ? t('hidePlayer') : t('showPlayer')}
-            </Button>
-
+            <div className="flex">
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => setShowPlayer(!showPlayer)}
+              >
+                {showPlayer ? t('hidePlayer') : t('showPlayer')}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="ml-1 mt-2"
+                onClick={() => {
+                  const streamKey = stream.rtmpUrl.split('/').pop() || '';
+                  copyToClipboard(streamKey, t('streamKeyLabel'));
+                }}
+              >
+                {t('copyStreamKey')}
+              </Button>
+            </div>
             {showPlayer && stream.status === StreamStatus.RUNNING && (
               <div className="mt-3">
                 <RtspPlayer url={stream.hlsUrl} className="rounded overflow-hidden" />

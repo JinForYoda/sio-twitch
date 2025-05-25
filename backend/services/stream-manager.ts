@@ -1,17 +1,17 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Stream, StreamOptions, StreamStatus } from '@shared/types/stream';
-import RtmpServer from './rtmp-server';
-import Converter from './converter';
-import logger from '../utils/logger';
+import { v4 as uuidv4 } from 'uuid';
 import config from '../config/config';
 import { StreamModel } from '../models/Stream';
+import logger from '../utils/logger';
+import Converter from './converter';
+import MediaMtxService from './mediamtx-service';
 
 class StreamManager {
-  private rtmpServer: RtmpServer;
+  private rtmpServer: MediaMtxService;
   private converter: Converter;
   private streams: Map<string, StreamModel> = new Map();
 
-  constructor(rtmpServer: RtmpServer, converter: Converter) {
+  constructor(rtmpServer: MediaMtxService, converter: Converter) {
     this.rtmpServer = rtmpServer;
     this.converter = converter;
     this.setupEventHandlers();
@@ -79,14 +79,6 @@ class StreamManager {
     return parts[parts.length - 1];
   }
 
-  private getNetworkAddress(): string {
-    // В Docker контейнере используем mediamtx для доступа к MediaMTX серверу
-    if (process.env.DOCKER_ENV === 'true') {
-      return 'mediamtx';
-    }
-    return 'localhost';
-  }
-
   private findStreamByKey(streamKey: string): Stream | undefined {
     for (const stream of this.streams.values()) {
       if (stream.rtmpUrl.endsWith(`/${streamKey}`)) {
@@ -101,8 +93,7 @@ class StreamManager {
     const streamKey =
       options.name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + id.substring(0, 8);
 
-    // Генерируем URL для доступа к MediaMTX
-    const host = this.getNetworkAddress();
+    const host = process.env.HOST;
 
     // Используем указанный пользователем URL или генерируем новый на основе MediaMTX
     const rtmpUrl = options.rtmpUrl || `rtmp://${host}:${config.rtmp.port}/live/${streamKey}`;
