@@ -1,6 +1,6 @@
 import { Stream, StreamOptions, StreamStatus } from '@shared/types/stream';
+import { getHLSUrl, getRTMPUrl, getRTSPUrl } from 'utils/get-stream-url';
 import { v4 as uuidv4 } from 'uuid';
-import config from '../config/config';
 import { StreamModel } from '../models/Stream';
 import logger from '../utils/logger';
 import Converter from './converter';
@@ -93,21 +93,13 @@ class StreamManager {
     const streamKey =
       options.name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + id.substring(0, 8);
 
-    const host = process.env.HOST;
+    const rtmpUrl = options.rtmpUrl || getRTMPUrl(streamKey);
 
-    // Используем указанный пользователем URL или генерируем новый на основе MediaMTX
-    const rtmpUrl = options.rtmpUrl || `rtmp://${host}:${config.rtmp.port}/live/${streamKey}`;
+    const rtspUrl = getRTSPUrl(streamKey);
 
-    // URL для RTSP потока
-    const rtspUrl = `rtsp://${host}:${config.rtsp.port}/live/${streamKey}`;
+    const hlsUrl = getHLSUrl(streamKey);
 
-    const stream = new StreamModel(
-      id,
-      options.name,
-      rtmpUrl,
-      rtspUrl,
-      `http://${host}:8888/hls/live/${streamKey}/index.m3u8`,
-    );
+    const stream = new StreamModel(id, options.name, rtmpUrl, rtspUrl, hlsUrl);
 
     this.streams.set(id, stream);
     logger.info(`Created new stream: ${id}`);
