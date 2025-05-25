@@ -26,5 +26,4 @@ RUN npm run build
 
 WORKDIR /app
 
-# Используем entrypoint скрипт для запуска приложения
 CMD ["supervisord", "-c", "/etc/supervisor.d/supervisord.conf"]
