@@ -3,6 +3,7 @@ import axios from 'axios';
 import { EventEmitter } from 'events';
 import { StreamModel } from '../models/Stream';
 import logger from '../utils/logger';
+import { getRTMPUrl, getRTSPUrl, getHLSUrl, getWebRTCUrl } from 'utils/get-stream-url';
 
 class Converter extends EventEmitter {
   private mediaServerApiUrl: string;
@@ -14,7 +15,7 @@ class Converter extends EventEmitter {
     // В Docker используем имя сервиса или IP, локально - localhost
     // Используем IP-адрес вместо имени хоста, чтобы избежать проблем с DNS
     this.host = process.env.HOST || 'localhost';
-    this.mediaServerApiUrl = `http://${this.host}:9997/v3`;
+    this.mediaServerApiUrl = `http://mediamtx:9997/v3`;
   }
 
   public async startConversion(stream: StreamModel): Promise<boolean> {
@@ -54,10 +55,10 @@ class Converter extends EventEmitter {
       this.updateStreamStatus(stream, StreamStatus.RUNNING);
 
       // Формируем URL для разных протоколов на основе streamKey
-      const rtmpUrl = `rtmp://${this.host}:1935/live/${streamKey}`;
-      const rtspUrl = `rtsp://${this.host}:8554/live/${streamKey}`;
-      const hlsUrl = `http://${this.host}:8888/hls/live/${streamKey}/index.m3u8`;
-      const webrtcUrl = `http://${this.host}:8889/webrtc/live/${streamKey}`;
+      const rtmpUrl = getRTMPUrl(streamKey);
+      const rtspUrl = getRTSPUrl(streamKey);
+      const hlsUrl = getHLSUrl(streamKey);
+      const webrtcUrl = getWebRTCUrl(streamKey);
 
       logger.info(
         `Stream ${stream.id} is available at:\n` +

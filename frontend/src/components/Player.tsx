@@ -4,16 +4,16 @@ import { cn } from '@/lib/utils';
 import ReactPlayer from 'react-player';
 
 /**
- * RTSP Player component using react-player library
- * This component provides a video player for RTSP streams
+ * Media Player component using react-player library
+ * This component provides a video player for streaming media (HLS, WebRTC, RTSP)
  */
-interface RtspPlayerProps {
+interface PlayerProps {
   url: string;
   autoPlay?: boolean;
   className?: string;
 }
 
-const RtspPlayer: React.FC<RtspPlayerProps> = ({ autoPlay = true, className = '' }) => {
+const Player: React.FC<PlayerProps> = ({ url, autoPlay = true, className = '' }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { t } = useLanguage();
@@ -55,7 +55,7 @@ const RtspPlayer: React.FC<RtspPlayerProps> = ({ autoPlay = true, className = ''
       )}
 
       <ReactPlayer
-        url={'http://localhost:8888/hls/live/asd_ee488f2b/index.m3u8'}
+        url={url}
         playing={autoPlay}
         controls
         width="100%"
@@ -65,7 +65,7 @@ const RtspPlayer: React.FC<RtspPlayerProps> = ({ autoPlay = true, className = ''
         onError={handleError}
         config={{
           file: {
-            forceVideo: true,
+            forceHLS: true,
             attributes: {
               style: {
                 width: '100%',
@@ -80,4 +80,4 @@ const RtspPlayer: React.FC<RtspPlayerProps> = ({ autoPlay = true, className = ''
   );
 };
 
-export default RtspPlayer;
+export default Player;

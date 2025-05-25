@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Stream, StreamStatus } from '@shared/types/stream';
-import { useToast } from '@/components/ui/use-toast';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/components/ui/language/language-provider';
-import RtspPlayer from './RtspPlayer';
+import { useToast } from '@/components/ui/use-toast';
+import { Stream, StreamStatus } from '@shared/types/stream';
+import React, { useState } from 'react';
+import Player from './Player';
 
 interface StreamCardProps {
   stream: Stream;
@@ -172,7 +172,7 @@ const StreamCard: React.FC<StreamCardProps> = ({ stream, onStart, onStop, onDele
             </div>
             {showPlayer && stream.status === StreamStatus.RUNNING && (
               <div className="mt-3">
-                <RtspPlayer url={stream.hlsUrl} className="rounded overflow-hidden" />
+                <Player url={stream.hlsUrl} className="rounded overflow-hidden" />
               </div>
             )}
           </div>

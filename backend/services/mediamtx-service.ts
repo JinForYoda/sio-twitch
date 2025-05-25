@@ -32,7 +32,7 @@ class MediaMtxService extends EventEmitter {
     super();
     // Используем имя сервиса 'mediamtx' как хост в Docker среде
     // или 127.0.0.1 для локальной разработки
-    this.host = process.env.DOCKER_ENV === 'true' ? 'mediamtx' : '127.0.0.1';
+    this.host = process.env.DOCKER_ENV === 'true' ? 'mediamtx' : 'localhost';
     this.baseUrl = `http://${this.host}:${config.mediamtx.apiPort}/${this.apiVersion}`;
 
     logger.info(`MediaMTX service initialized with API at ${this.baseUrl}`);
@@ -107,44 +107,10 @@ class MediaMtxService extends EventEmitter {
     }
   }
 
-  /**
-   * Формирует RTMP URL для потока
-   */
-  getRtmpUrl(streamKey: string): string {
-    return `rtmp://${this.host}:${config.rtmp.port}/live/${streamKey}`;
-  }
-
-  /**
-   * Формирует RTSP URL для потока
-   */
-  getRtspUrl(streamKey: string): string {
-    return `rtsp://${this.host}:${config.rtsp.port}/live/${streamKey}`;
-  }
-
-  /**
-   * Формирует HLS URL для потока
-   */
-  getHlsUrl(streamKey: string): string {
-    return `http://${this.host}:${config.http.port}/hls/live/${streamKey}/index.m3u8`;
-  }
-
-  /**
-   * Формирует WebRTC URL для потока
-   */
-  getWebRtcUrl(streamKey: string): string {
-    return `http://${this.host}:${config.webrtc.port}/webrtc/live/${streamKey}`;
-  }
-
-  /**
-   * Метод для совместимости с предыдущим RtmpServer
-   */
   start(): void {
     logger.info(`RTMP server running on rtmp://${config.host}:${config.rtmp.port}`);
   }
 
-  /**
-   * Метод для совместимости с предыдущим RtmpServer
-   */
   stop(): void {
     logger.info('RTMP server stopped');
   }
