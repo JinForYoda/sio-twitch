@@ -5,17 +5,19 @@ services:
     build: .
     container_name: rtmp-rtsp-converter
     ports:
-      - '3000:3000' # Backend API
-      - '5173:5173' # Frontend
+      - '${API_PORT}:${API_PORT}'
+      - '${FRONTEND_PORT}:${FRONTEND_PORT}'
     volumes:
       - ./logs:/app/logs
     restart: unless-stopped
     environment:
-      - PORT=3000
-      - RTMP_PORT=1935
-      - RTSP_PORT=8554
-      - HTTP_PORT=8888
+      - PORT=${API_PORT}
+      - RTMP_PORT=${RTMP_PORT}
+      - RTMP_CHUNK_SIZE=60000
+      - RTSP_PORT=${RTSP_PORT}
+      - HTTP_PORT=${HLS_PORT}
       - LOG_LEVEL=info
+      - LOG_DIR=./logs
       - DOCKER_ENV=true
     depends_on:
       - mediamtx
@@ -27,14 +29,13 @@ services:
     platform: linux/amd64
     container_name: mediamtx
     ports:
-      - '1935:1935' # RTMP
-      - '8554:8554' # RTSP
-      - '8888:8888' # HLS/WebRTC
-      - '8889:8889' # API
-      - '9997:9997' # MediaMTX API
+      - '${RTMP_PORT}:${RTMP_PORT}'
+      - '${RTSP_PORT}:${RTSP_PORT}'
+      - '${HLS_PORT}:${HLS_PORT}'
+      - '${WEBRTC_PORT}:${WEBRTC_PORT}'
+      - '${MEDIAMTX_API_PORT}:${MEDIAMTX_API_PORT}'
     volumes:
       - ./mediamtx.yml:/mediamtx.yml
-      - ./media:/media # Папка для записи медиа-файлов
     restart: unless-stopped
     networks:
       - stream-network

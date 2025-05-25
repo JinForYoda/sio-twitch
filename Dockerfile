@@ -1,53 +1,30 @@
 FROM node:18-alpine
 
-# Установка необходимых зависимостей
-RUN apk add --no-cache git g++ make cmake perl-dev openssl-dev
-# Установка SRS из предварительно собранного пакета
-RUN apk add --no-cache nginx
+RUN apk add --no-cache g++ make openssl-dev supervisor
 
-# Создание рабочей директории
-WORKDIR /app
+RUN mkdir -p /etc/supervisor.d/
+COPY supervisord.conf /etc/supervisor.d/supervisord.conf
 
-# Копирование файлов package.json и package-lock.json для бэкенда
-COPY backend/package*.json ./backend/
-
-# Установка зависимостей для бэкенда
 WORKDIR /app/backend
+COPY backend/package*.json ./
 RUN npm install
 
-WORKDIR /app
-# Копирование файлов package.json и package-lock.json для фронтенда
-COPY frontend/package*.json ./frontend/
-
-# Установка зависимостей для фронтенда
 WORKDIR /app/frontend
+COPY frontend/package*.json ./
 RUN npm install
 
-# Возвращаемся в корневую директорию
 WORKDIR /app
-# Копирование исходного кода
 COPY . .
 
-# Создание директории для логов
 RUN mkdir -p logs
 
-# Сборка TypeScript для бэкенда
 WORKDIR /app/backend
 RUN npm run build
 
-# Сборка фронтенда
 WORKDIR /app/frontend
 RUN npm run build
 
-# Возвращаемся в корневую директорию
 WORKDIR /app
 
-# Открытие портов (бэкенд, RTMP, RTSP, frontend)
-EXPOSE 3000 1935 8554 5173
-
-# Копируем скрипт запуска
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
-# Запуск приложения
-CMD ["/app/start.sh"]
+# Используем entrypoint скрипт для запуска приложения
+CMD ["supervisord", "-c", "/etc/supervisor.d/supervisord.conf"]
