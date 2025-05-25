@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Stream } from '@/types/stream'
+import { Stream } from '@shared/types/stream'
 import StreamCard from './StreamCard'
 import { useLanguage } from '@/components/ui/language/language-provider'
 

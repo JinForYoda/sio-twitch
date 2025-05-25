@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Stream, StreamStatus } from '@/types/stream';
+import { Stream, StreamStatus } from '@shared/types/stream';
 import { useToast } from '@/components/ui/use-toast';
 import { useLanguage } from '@/components/ui/language/language-provider';
 import RtspPlayer from './RtspPlayer';

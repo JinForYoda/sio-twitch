@@ -8,7 +8,7 @@ import Header from '@/components/Header'
 import StreamForm from '@/components/StreamForm'
 import StreamList from '@/components/StreamList'
 import HowToUse from '@/components/HowToUse'
-import { Stream } from '@/types/stream'
+import { Stream } from '@shared/types/stream'
 
 // App content component that uses the language context
 function AppContent() {
