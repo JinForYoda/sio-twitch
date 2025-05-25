@@ -2,9 +2,9 @@ import { Stream, StreamStatus } from '@shared/types/stream';
 import logger from '../utils/logger';
 import { EventEmitter } from 'events';
 import axios from 'axios';
+import { StreamModel } from '../models/Stream';
 
 class Converter extends EventEmitter {
-  private streams: Map<string, Stream> = new Map();
   private mediaServerApiUrl: string;
   private host: string;
 
@@ -17,11 +17,8 @@ class Converter extends EventEmitter {
     this.mediaServerApiUrl = `http://${this.host}:9997/v3`;
   }
 
-  public async startConversion(stream: Stream): Promise<boolean> {
-    if (
-      this.streams.has(stream.id) &&
-      this.streams.get(stream.id)?.status === StreamStatus.RUNNING
-    ) {
+  public async startConversion(stream: StreamModel): Promise<boolean> {
+    if (stream.status === StreamStatus.RUNNING) {
       logger.warn(`Stream ${stream.id} is already running`);
       return false;
     }
@@ -54,7 +51,7 @@ class Converter extends EventEmitter {
       }
 
       // Обновляем статус потока
-      this.updateStreamStatus(stream.id, StreamStatus.RUNNING);
+      this.updateStreamStatus(stream, StreamStatus.RUNNING);
 
       // Формируем URL для разных протоколов на основе streamKey
       const rtmpUrl = `rtmp://${this.host}:1935/live/${streamKey}`;
@@ -74,22 +71,15 @@ class Converter extends EventEmitter {
       return true;
     } catch (error) {
       logger.error(`Error starting stream ${stream.id}: ${error}`);
-      this.updateStreamStatus(stream.id, StreamStatus.ERROR);
+      this.updateStreamStatus(stream, StreamStatus.ERROR);
       this.emit('conversionError', stream.id, error);
       return false;
     }
   }
 
-  public async stopConversion(streamId: string): Promise<boolean> {
-    const stream = this.streams.get(streamId);
-
-    if (!stream) {
-      logger.warn(`Stream ${streamId} is not running or not found`);
-      return false;
-    }
-
+  public async stopConversion(stream: StreamModel): Promise<boolean> {
     try {
-      logger.info(`Stopping stream conversion ${streamId}`);
+      logger.info(`Stopping stream conversion ${stream.id}`);
 
       // Получаем ключ потока из URL
       const streamKey = this.extractStreamKey(stream.rtmpUrl);
@@ -106,35 +96,30 @@ class Converter extends EventEmitter {
 
       // Медиа-сервер автоматически остановит поток, когда источник прекратит публикацию
       // Мы просто обновляем статус в нашей системе
-      logger.info(`Stream ${streamId} marked as stopped`);
+      logger.info(`Stream ${stream.id} marked as stopped`);
 
       // Обновляем статус потока
-      this.updateStreamStatus(streamId, StreamStatus.STOPPED);
-      this.emit('conversionStopped', streamId);
+      this.updateStreamStatus(stream, StreamStatus.STOPPED);
+      this.emit('conversionStopped', stream.id);
       return true;
     } catch (error) {
-      logger.error(`Error stopping stream ${streamId}: ${error}`);
+      logger.error(`Error stopping stream ${stream.id}: ${error}`);
       return false;
     }
   }
 
-  public getStream(streamId: string): Stream | undefined {
-    return this.streams.get(streamId);
-  }
+  // public getStream(streamId: string): Stream | undefined {
+  //   return this.streams.get(streamId);
+  // }
 
-  public getAllStreams(): Stream[] {
-    return Array.from(this.streams.values());
-  }
+  // public getAllStreams(): Stream[] {
+  //   return Array.from(this.streams.values());
+  // }
 
-  public updateStreamStatus(streamId: string, status: StreamStatus): void {
-    const stream = this.streams.get(streamId);
-
-    if (stream) {
-      stream.status = status;
-      stream.updatedAt = new Date();
-      this.streams.set(streamId, stream);
-      this.emit('streamStatusChanged', streamId, status);
-    }
+  private updateStreamStatus(stream: StreamModel, status: StreamStatus): void {
+    stream.status = status;
+    stream.updatedAt = new Date();
+    this.emit('streamStatusChanged', stream.id, status);
   }
 
   // Извлекает ключ потока из URL (например, live/stream1 -> stream1)

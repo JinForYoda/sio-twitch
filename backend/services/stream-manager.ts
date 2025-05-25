@@ -4,11 +4,12 @@ import RtmpServer from './rtmp-server';
 import Converter from './converter';
 import logger from '../utils/logger';
 import config from '../config/config';
+import { StreamModel } from '../models/Stream';
 
 class StreamManager {
   private rtmpServer: RtmpServer;
   private converter: Converter;
-  private streams: Map<string, Stream> = new Map();
+  private streams: Map<string, StreamModel> = new Map();
 
   constructor(rtmpServer: RtmpServer, converter: Converter) {
     this.rtmpServer = rtmpServer;
@@ -38,7 +39,7 @@ class StreamManager {
 
       if (stream) {
         logger.info(`Stream ended with key ${streamKey}, stopping conversion`);
-        this.converter.stopConversion(stream.id);
+        this.converter.stopConversion(stream);
       }
     });
 
@@ -109,16 +110,13 @@ class StreamManager {
     // URL для RTSP потока
     const rtspUrl = `rtsp://${host}:${config.rtsp.port}/live/${streamKey}`;
 
-    const stream: Stream = {
+    const stream = new StreamModel(
       id,
-      name: options.name,
+      options.name,
       rtmpUrl,
       rtspUrl,
-      hlsUrl: `http://${host}:8888/hls/live/${streamKey}/index.m3u8`,
-      status: StreamStatus.IDLE,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+      `http://${host}:8888/hls/live/${streamKey}/index.m3u8`,
+    );
 
     this.streams.set(id, stream);
     logger.info(`Created new stream: ${id}`);
@@ -140,7 +138,14 @@ class StreamManager {
   }
 
   public async stopStream(streamId: string): Promise<boolean> {
-    return await this.converter.stopConversion(streamId);
+    const stream = this.streams.get(streamId);
+
+    if (!stream) {
+      logger.warn(`Stream ${streamId} not found`);
+      return false;
+    }
+
+    return await this.converter.stopConversion(stream);
   }
 
   public getStream(streamId: string): Stream | undefined {
@@ -159,7 +164,7 @@ class StreamManager {
     }
 
     if (stream.status === StreamStatus.RUNNING) {
-      this.converter.stopConversion(streamId);
+      this.converter.stopConversion(stream);
     }
 
     this.streams.delete(streamId);
