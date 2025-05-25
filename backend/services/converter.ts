@@ -1,4 +1,4 @@
-import { Stream, StreamStatus } from '../models/stream';
+import { Stream, StreamStatus } from '@shared/types/stream';
 import logger from '../utils/logger';
 import { EventEmitter } from 'events';
 import axios from 'axios';

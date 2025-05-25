@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { StreamOptions } from '../models/stream';
+import { StreamOptions } from '@shared/types/stream';
 import StreamManager from '../services/stream-manager';
 import logger from '../utils/logger';
 

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Stream, StreamOptions, StreamStatus } from '../models/stream';
+import { Stream, StreamOptions, StreamStatus } from '@shared/types/stream';
 import RtmpServer from './rtmp-server';
 import Converter from './converter';
 import logger from '../utils/logger';

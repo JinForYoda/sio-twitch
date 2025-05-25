@@ -2,8 +2,6 @@
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": ".",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -14,10 +12,11 @@
     "emitDecoratorMetadata": true,
     "baseUrl": ".",
     "paths": {
-      "*": ["*"]
+      "*": ["*"],
+      "@shared/*": ["../shared/*"],
     },
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "include": ["/**/*"],
+  "include": ["/**/*", "../shared/**/*"],
   "exclude": ["node_modules", "dist"]
 }
