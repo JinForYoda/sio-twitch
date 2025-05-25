@@ -3,10 +3,6 @@ import { useLanguage } from '@/components/ui/language/language-provider';
 import { cn } from '@/lib/utils';
 import ReactPlayer from 'react-player';
 
-/**
- * Media Player component using react-player library
- * This component provides a video player for streaming media (HLS, WebRTC, RTSP)
- */
 interface PlayerProps {
   url: string;
   autoPlay?: boolean;
@@ -18,12 +14,10 @@ const Player: React.FC<PlayerProps> = ({ url, autoPlay = true, className = '' })
   const [error, setError] = useState<string | null>(null);
   const { t } = useLanguage();
 
-  // Handler for when the player is ready
   const handleReady = () => {
     setIsLoading(false);
   };
 
-  // Handler for player errors
   const handleError = (e: any) => {
     console.error('Player error:', e);
     setError(t('playerError') || 'Failed to initialize player');

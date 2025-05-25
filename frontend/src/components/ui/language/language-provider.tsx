@@ -43,7 +43,7 @@ export function LanguageProvider({
       if (value && typeof value === 'object' && k in value) {
         value = value[k as keyof typeof value]
       } else {
-        return key // Return the key if translation not found
+        return key
       }
     }
 
@@ -51,7 +51,6 @@ export function LanguageProvider({
       return key
     }
 
-    // Replace parameters in the string if provided
     if (params) {
       return Object.entries(params).reduce<string>((acc, [paramKey, paramValue]) => {
         return acc.replace(`{${paramKey}}`, paramValue)

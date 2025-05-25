@@ -10,7 +10,6 @@ import StreamList from '@/components/StreamList'
 import HowToUse from '@/components/HowToUse'
 import { Stream } from '@shared/types/stream'
 
-// App content component that uses the language context
 function AppContent() {
   const { t } = useLanguage()
   const [streams, setStreams] = useState<Stream[]>([])
@@ -37,7 +36,6 @@ function AppContent() {
   useEffect(() => {
     fetchStreams()
 
-    // Auto-refresh every 10 seconds
     const interval = setInterval(fetchStreams, 10000)
     return () => clearInterval(interval)
   }, [])
@@ -175,7 +173,6 @@ function AppContent() {
   )
 }
 
-// Main App component that provides theme and language context
 function App() {
   return (
     <ThemeProvider defaultTheme="light">
