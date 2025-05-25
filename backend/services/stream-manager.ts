@@ -4,14 +4,14 @@ import config from '../config/config';
 import { StreamModel } from '../models/Stream';
 import logger from '../utils/logger';
 import Converter from './converter';
-import RtmpServer from './rtmp-server';
+import MediaMtxService from './mediamtx-service';
 
 class StreamManager {
-  private rtmpServer: RtmpServer;
+  private rtmpServer: MediaMtxService;
   private converter: Converter;
   private streams: Map<string, StreamModel> = new Map();
 
-  constructor(rtmpServer: RtmpServer, converter: Converter) {
+  constructor(rtmpServer: MediaMtxService, converter: Converter) {
     this.rtmpServer = rtmpServer;
     this.converter = converter;
     this.setupEventHandlers();

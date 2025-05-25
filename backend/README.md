@@ -16,7 +16,7 @@
 
 - **Node.js 18** с **TypeScript**
 - **Express** для REST API
-- **node-media-server** для приема RTMP потоков
+- **MediaMTX** для приема и обработки медиапотоков
 - **Winston** для логирования
 - **dotenv** для управления конфигурацией
 - **uuid** для генерации уникальных идентификаторов
@@ -30,8 +30,8 @@
 ├── models/          # Модели данных
 ├── routes/          # Определение маршрутов API
 ├── services/        # Сервисы для работы с видеопотоками
-│   ├── rtmp-server.ts # RTMP сервер на основе node-media-server
-│   ├── converter.ts   # Конвертер потоков на основе FFmpeg
+│   ├── mediamtx-service.ts # Сервис для работы с MediaMTX API
+│   ├── converter.ts   # Конвертер потоков с использованием MediaMTX
 │   └── stream-manager.ts # Управление потоками
 ├── utils/           # Вспомогательные утилиты
 ├── app.ts           # Главный файл приложения
@@ -42,9 +42,9 @@
 
 ## Основные компоненты
 
-### RtmpServer
+### MediaMtxService
 
-Обертка над `node-media-server`, которая принимает RTMP потоки на порту 1935.
+Сервис для работы с MediaMTX API. Он обеспечивает работу с RTMP, RTSP, HLS и WebRTC потоками через единый интерфейс.
 
 ### Converter
 

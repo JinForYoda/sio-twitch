@@ -3,7 +3,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import config from './config/config';
 import logger from './utils/logger';
-import RtmpServer from './services/rtmp-server';
+import MediaMtxService from './services/mediamtx-service';
 import Converter from './services/converter';
 import StreamManager from './services/stream-manager';
 import StreamController from './controllers/stream-controller';
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Инициализация сервисов
-const rtmpServer = new RtmpServer();
+const rtmpServer = new MediaMtxService();
 const converter = new Converter();
 const streamManager = new StreamManager(rtmpServer, converter);
 const streamController = new StreamController(streamManager);

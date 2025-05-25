@@ -10,7 +10,7 @@
 
 - **Node.js** с **TypeScript**
 - **Express** для REST API
-- **node-media-server** для приема RTMP потоков
+- **MediaMTX** для приема и обработки медиапотоков
 - **Winston** для логирования
 
 ### Фронтенд
