@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useLanguage } from '@/components/ui/language/language-provider';
 import { cn } from '@/lib/utils';
 import ReactPlayer from 'react-player';
+import { Loader2, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface PlayerProps {
   url: string;
@@ -9,20 +11,27 @@ interface PlayerProps {
   className?: string;
 }
 
-const Player: React.FC<PlayerProps> = ({ url, autoPlay = true, className = '' }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const Player: React.FC<PlayerProps> = ({ url, className = '', autoPlay = true }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [key, setKey] = useState(0);
   const { t } = useLanguage();
 
-  const handleReady = () => {
-    setIsLoading(false);
-  };
+  const handleReady = useCallback(() => {
+    setLoading(false);
+  }, []);
 
-  const handleError = (e: any) => {
+  const handleError = useCallback((e: Error) => {
     console.error('Player error:', e);
-    setError(t('playerError') || 'Failed to initialize player');
-    setIsLoading(false);
-  };
+    setLoading(false);
+    setError(e);
+  }, []);
+
+  const handleReload = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    setKey((prevKey) => prevKey + 1);
+  }, []);
 
   return (
     <div
@@ -33,22 +42,34 @@ const Player: React.FC<PlayerProps> = ({ url, autoPlay = true, className = '' })
         className,
       )}
     >
-      {isLoading && (
+      {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-primary-foreground z-10">
           <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <Loader2 className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
             <p className="mt-2">{t('loading') || 'Loading...'}</p>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-destructive z-10">
-          <p>{error}</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 z-10">
+          <div className="text-red-500 mb-4">
+            {t('playerError') || 'Failed to initialize player'}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReload}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            {t('reload')}
+          </Button>
         </div>
       )}
 
       <ReactPlayer
+        key={key}
         url={url}
         playing={autoPlay}
         controls

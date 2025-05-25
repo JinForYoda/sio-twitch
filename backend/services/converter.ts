@@ -3,6 +3,7 @@ import axios from 'axios';
 import { EventEmitter } from 'events';
 import { StreamModel } from '../models/Stream';
 import logger from '../utils/logger';
+import config from 'config/config';
 import { getRTMPUrl, getRTSPUrl, getHLSUrl, getWebRTCUrl } from 'utils/get-stream-url';
 
 class Converter extends EventEmitter {
@@ -11,11 +12,8 @@ class Converter extends EventEmitter {
 
   constructor() {
     super();
-    // Определяем URL API MediaMTX сервера
-    // В Docker используем имя сервиса или IP, локально - localhost
-    // Используем IP-адрес вместо имени хоста, чтобы избежать проблем с DNS
-    this.host = process.env.HOST || 'localhost';
-    this.mediaServerApiUrl = `http://mediamtx:9997/v3`;
+    this.host = config.host;
+    this.mediaServerApiUrl = config.mediamtx.apiUrl;
   }
 
   public async startConversion(stream: StreamModel): Promise<boolean> {
@@ -29,32 +27,26 @@ class Converter extends EventEmitter {
         `Starting conversion for stream ${stream.id}: ${stream.rtmpUrl} -> ${stream.rtspUrl}`,
       );
 
-      // Получаем ключ потока из URL
       const streamKey = this.extractStreamKey(stream.rtmpUrl);
 
-      // Проверяем статус API MediaMTX
       try {
-        // Проверяем, доступен ли API MediaMTX
-        const configResponse = await axios.get(`${this.mediaServerApiUrl}/config/global/get`);
+        const configResponse = await axios.get(`${this.mediaServerApiUrl}/config/global/get`, {
+          family: 4,
+        });
         logger.info(`MediaMTX API status: ${configResponse.status}`);
 
-        // Проверяем, существует ли уже поток с таким ключом
         try {
           const pathResponse = await axios.get(`${this.mediaServerApiUrl}/paths/list`);
           logger.info(`Path ${streamKey} status: ${JSON.stringify(pathResponse.data)}`);
         } catch {
-          // Если путь не найден, это нормально - он будет создан автоматически
           logger.debug(`Path ${streamKey} not found, will be created automatically`);
         }
       } catch (err) {
         logger.warn(`Could not connect to MediaMTX API: ${err}`);
-        // Продолжаем работу, так как MediaMTX может работать без API
       }
 
-      // Обновляем статус потока
       this.updateStreamStatus(stream, StreamStatus.RUNNING);
 
-      // Формируем URL для разных протоколов на основе streamKey
       const rtmpUrl = getRTMPUrl(streamKey);
       const rtspUrl = getRTSPUrl(streamKey);
       const hlsUrl = getHLSUrl(streamKey);
@@ -82,11 +74,9 @@ class Converter extends EventEmitter {
     try {
       logger.info(`Stopping stream conversion ${stream.id}`);
 
-      // Получаем ключ потока из URL
       const streamKey = this.extractStreamKey(stream.rtmpUrl);
 
       try {
-        // Проверяем состояние потока в MediaMTX
         const pathResponse = await axios.get(`${this.mediaServerApiUrl}/paths/list`);
         logger.info(
           `Path ${streamKey} status before stopping: ${JSON.stringify(pathResponse.data)}`,
@@ -95,11 +85,8 @@ class Converter extends EventEmitter {
         logger.warn(`Could not get status for path ${streamKey}: ${error}`);
       }
 
-      // Медиа-сервер автоматически остановит поток, когда источник прекратит публикацию
-      // Мы просто обновляем статус в нашей системе
       logger.info(`Stream ${stream.id} marked as stopped`);
 
-      // Обновляем статус потока
       this.updateStreamStatus(stream, StreamStatus.STOPPED);
       this.emit('conversionStopped', stream.id);
       return true;
@@ -109,21 +96,12 @@ class Converter extends EventEmitter {
     }
   }
 
-  // public getStream(streamId: string): Stream | undefined {
-  //   return this.streams.get(streamId);
-  // }
-
-  // public getAllStreams(): Stream[] {
-  //   return Array.from(this.streams.values());
-  // }
-
   private updateStreamStatus(stream: StreamModel, status: StreamStatus): void {
     stream.status = status;
     stream.updatedAt = new Date();
     this.emit('streamStatusChanged', stream.id, status);
   }
 
-  // Извлекает ключ потока из URL (например, live/stream1 -> stream1)
   private extractStreamKey(url: string): string {
     const parts = url.split('/');
     return parts[parts.length - 1];

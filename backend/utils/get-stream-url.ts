@@ -1,17 +1,19 @@
-const host = process.env.HOST;
+import config from '../config/config';
+
+const { host, rtmp, rtsp, http } = config;
 
 export const getRTMPUrl = (streamKey: string): string => {
-  return `rtmp://${host}:${process.env.RTMP_PORT}/live/${streamKey}`;
+  return `rtmp://${host}:${rtmp.port}/live/${streamKey}`;
 };
 
 export const getRTSPUrl = (streamKey: string): string => {
-  return `rtsp://${host}:${process.env.RTSP_PORT}/live/${streamKey}`;
+  return `rtsp://${host}:${rtsp.port}/live/${streamKey}`;
 };
 
 export const getHLSUrl = (streamKey: string): string => {
-  return `http://${host}:${process.env.HTTP_PORT}/live/${streamKey}/index.m3u8`;
+  return `http://${host}:${http.port}/live/${streamKey}/index.m3u8`;
 };
 
 export const getWebRTCUrl = (streamKey: string): string => {
-  return `http://${host}:${process.env.WEBRTC_PORT}/webrtc/live/${streamKey}`;
+  return `http://${host}:${config.webrtc.port}/webrtc/live/${streamKey}`;
 };

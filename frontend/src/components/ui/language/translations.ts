@@ -49,6 +49,7 @@ export const translations = {
     rtspPlayerUrlLabel: 'URL',
     rtspPlayerNote: 'Примечание: Для работы плеера требуется библиотека воспроизведения видео',
     playerError: 'Ошибка инициализации плеера',
+    reload: 'Перезагрузить',
 
     howToUse: 'Как использовать',
     step1Title: '1. Создайте новый поток',
@@ -125,6 +126,7 @@ export const translations = {
     rtspPlayerUrlLabel: 'URL',
     rtspPlayerNote: 'Ескерту: Плеердің жұмыс істеуі үшін бейне ойнату кітапханасы қажет',
     playerError: 'Плеерді іске қосу қатесі',
+    reload: 'Қайта жүктеу',
 
     howToUse: 'Қалай қолдану керек',
     step1Title: '1. Жаңа ағын жасаңыз',

@@ -4,7 +4,6 @@ import StreamController from '../controllers/stream-controller';
 const createStreamRoutes = (streamController: StreamController): Router => {
   const router = Router();
 
-  // Маршруты для управления потоками
   router.post('/', streamController.createStream);
   router.get('/', streamController.getStreams);
   router.get('/:id', streamController.getStream);

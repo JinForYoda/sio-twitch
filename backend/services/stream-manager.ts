@@ -18,11 +18,9 @@ class StreamManager {
   }
 
   private setupEventHandlers(): void {
-    // Обработка событий от RTMP-сервера
     this.rtmpServer.on('streamPublished', (data) => {
       const streamKey = this.extractStreamKey(data.streamPath);
 
-      // Ищем поток по ключу
       const stream = this.findStreamByKey(streamKey);
 
       if (stream) {
@@ -43,7 +41,6 @@ class StreamManager {
       }
     });
 
-    // Обработка событий от конвертера
     this.converter.on('conversionStarted', (streamId) => {
       const stream = this.streams.get(streamId);
       if (stream) {
@@ -74,7 +71,6 @@ class StreamManager {
   }
 
   private extractStreamKey(streamPath: string): string {
-    // Формат пути: /live/streamKey
     const parts = streamPath.split('/');
     return parts[parts.length - 1];
   }
