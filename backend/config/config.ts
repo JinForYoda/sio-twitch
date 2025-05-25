@@ -27,27 +27,27 @@ interface Config {
 }
 
 const config: Config = {
-  host: process.env.HOST || 'localhost',
+  host: 'localhost',
   server: {
-    port: Number(process.env.PORT) || 3000,
+    port: Number(process.env.PORT),
   },
   rtmp: {
-    port: Number(process.env.RTMP_PORT) || 1935,
-    chunkSize: Number(process.env.RTMP_CHUNK_SIZE) || 60000,
+    port: Number(process.env.RTMP_PORT),
+    chunkSize: Number(process.env.RTMP_CHUNK_SIZE),
   },
   rtsp: {
-    port: Number(process.env.RTSP_PORT) || 8554,
+    port: Number(process.env.RTSP_PORT),
   },
   http: {
-    port: Number(process.env.HTTP_PORT) || 8888,
+    port: Number(process.env.HTTP_PORT),
   },
   webrtc: {
-    port: Number(process.env.WEBRTC_PORT) || 8889,
+    port: Number(process.env.WEBRTC_PORT),
   },
   mediamtx: {
-    apiUrl: `http://${process.env.MEDIAMTX_API_HOST || 'mediamtx'}:${Number(process.env.MEDIAMTX_API_PORT) || 9997}/v3`,
+    apiUrl: `http://${process.env.MEDIAMTX_API_HOST}:${Number(process.env.MEDIAMTX_API_PORT)}/v3`,
   },
-  logDir: process.env.LOG_DIR || './logs',
+  logDir: './logs',
 };
 
 export default config;

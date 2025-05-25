@@ -20,9 +20,6 @@ interface MediaMtxPath {
   bytesReceived: number;
 }
 
-/**
- * Сервис для работы с MediaMTX API
- */
 class MediaMtxService extends EventEmitter {
   private baseUrl: string;
   private apiVersion: string = 'v3';
@@ -30,21 +27,16 @@ class MediaMtxService extends EventEmitter {
 
   constructor() {
     super();
-    // Используем имя сервиса 'mediamtx' как хост в Docker среде
-    // или 127.0.0.1 для локальной разработки
     this.host = config.host;
     this.baseUrl = config.mediamtx.apiUrl;
 
     logger.info(`MediaMTX service initialized with API at ${this.baseUrl}`);
   }
 
-  /**
-   * Получить список активных потоков
-   */
   async getPaths(): Promise<MediaMtxPath[] | null> {
     try {
       const response = await axios.get(`${this.baseUrl}/paths/list`, {
-        family: 4
+        family: 4,
       });
       return response.data.items || [];
     } catch (error) {
@@ -53,9 +45,6 @@ class MediaMtxService extends EventEmitter {
     }
   }
 
-  /**
-   * Проверить, активен ли поток
-   */
   async isPathActive(pathName: string): Promise<boolean> {
     try {
       const paths = await this.getPaths();
@@ -67,9 +56,6 @@ class MediaMtxService extends EventEmitter {
     }
   }
 
-  /**
-   * Получить информацию о конкретном потоке
-   */
   async getPathInfo(pathName: string): Promise<MediaMtxPath | null> {
     try {
       const paths = await this.getPaths();
@@ -81,9 +67,6 @@ class MediaMtxService extends EventEmitter {
     }
   }
 
-  /**
-   * Создать конфигурацию для нового потока
-   */
   async addPath(pathName: string, options: Record<string, unknown> = {}): Promise<boolean> {
     try {
       await axios.post(`${this.baseUrl}/config/paths/add/${pathName}`, options);
@@ -95,9 +78,6 @@ class MediaMtxService extends EventEmitter {
     }
   }
 
-  /**
-   * Удалить поток
-   */
   async removePath(pathName: string): Promise<boolean> {
     try {
       await axios.post(`${this.baseUrl}/config/paths/remove/${pathName}`);

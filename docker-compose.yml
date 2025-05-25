@@ -16,9 +16,6 @@ services:
       - RTMP_CHUNK_SIZE=60000
       - RTSP_PORT=${RTSP_PORT}
       - HTTP_PORT=${HLS_PORT}
-      - LOG_LEVEL=info
-      - LOG_DIR=./logs
-      - HOST=localhost
       - MEDIAMTX_API_PORT=${MEDIAMTX_API_PORT}
       - MEDIAMTX_API_HOST=${MEDIAMTX_API_HOST}
     depends_on:
