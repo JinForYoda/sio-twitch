@@ -9,21 +9,22 @@ RUN apk add --no-cache nginx
 WORKDIR /app
 
 # Копирование файлов package.json и package-lock.json для бэкенда
-COPY package*.json ./
+COPY backend/package*.json ./backend/
 
 # Установка зависимостей для бэкенда
+WORKDIR /app/backend
 RUN npm install
 
+WORKDIR /app
 # Копирование файлов package.json и package-lock.json для фронтенда
-COPY public/package*.json ./public/
+COPY frontend/package*.json ./frontend/
 
 # Установка зависимостей для фронтенда
-WORKDIR /app/public
+WORKDIR /app/frontend
 RUN npm install
 
 # Возвращаемся в корневую директорию
 WORKDIR /app
-
 # Копирование исходного кода
 COPY . .
 
@@ -31,10 +32,11 @@ COPY . .
 RUN mkdir -p logs
 
 # Сборка TypeScript для бэкенда
+WORKDIR /app/backend
 RUN npm run build
 
 # Сборка фронтенда
-WORKDIR /app/public
+WORKDIR /app/frontend
 RUN npm run build
 
 # Возвращаемся в корневую директорию

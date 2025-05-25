@@ -13,7 +13,7 @@ interface RtspPlayerProps {
   className?: string;
 }
 
-const RtspPlayer: React.FC<RtspPlayerProps> = ({ url, autoPlay = true, className = '' }) => {
+const RtspPlayer: React.FC<RtspPlayerProps> = ({ autoPlay = true, className = '' }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { t } = useLanguage();

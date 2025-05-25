@@ -1,6 +1,6 @@
 # Makefile for sio-twitch project
-BACKEND_DIR := .
-FRONTEND_DIR := public
+BACKEND_DIR := backend
+FRONTEND_DIR := frontend
 DOCKER_IMAGE := rtmp-rtsp-converter
 DOCKER_CONTAINER := rtmp-rtsp-converter
 

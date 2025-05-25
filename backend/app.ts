@@ -33,7 +33,7 @@ app.use('/api/streams', createStreamRoutes(streamController));
 
 // Базовый маршрут
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(__dirname, '../dist/frontend/index.html'));
 });
 
 // Обработка ошибок

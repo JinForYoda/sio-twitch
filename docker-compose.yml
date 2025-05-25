@@ -24,6 +24,7 @@ services:
 
   mediamtx:
     image: bluenviron/mediamtx:1.0.0
+    platform: linux/amd64
     container_name: mediamtx
     ports:
       - '1935:1935' # RTMP
