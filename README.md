@@ -1,112 +1,113 @@
-# RTMP → RTSP Конвертер
+# RTMP to RTSP Converter
 
-## Описание
+## Overview
 
-Сервис для конвертации видеопотоков из формата RTMP в формат RTSP. Проект позволяет создавать, запускать и управлять потоками, а также предоставляет веб-интерфейс для мониторинга и администрирования.
+This project converts video streams from RTMP to RTSP and provides a web interface for stream management and monitoring. It includes a backend API, a frontend dashboard, and a MediaMTX instance for ingesting and serving media streams.
 
-## Технологии
+## Tech Stack
 
-### Бэкенд
+### Backend
 
-- **Node.js** с **TypeScript**
-- **Express** для REST API
-- **MediaMTX** для приема и обработки медиапотоков
-- **Winston** для логирования
+- **Node.js** with **TypeScript**
+- **Express** for the REST API
+- **MediaMTX** for media ingest and stream processing
+- **Winston** for logging
 
-### Фронтенд
+### Frontend
 
-- **React** с **TypeScript**
-- **Vite** в качестве сборщика
-- **Tailwind CSS** для стилизации
-- **Radix UI** компоненты
-- **React Player** для проигрывания видеопотоков
+- **React** with **TypeScript**
+- **Vite** for bundling
+- **Tailwind CSS** for styling
+- **Radix UI** components
+- **React Player** for stream playback
 
-### Инфраструктура
+### Infrastructure
 
-- **Docker** и **Docker Compose** для контейнеризации
-- **MediaMTX** в качестве RTMP/RTSP сервера
-- **Supervisor** для управления процессами
+- **Docker** and **Docker Compose**
+- **MediaMTX** as the RTMP/RTSP server
+- **Supervisor** for process management inside the container
 
-## Структура проекта
+## Project Structure
 
-```
+```text
 ./
-├── backend/      # Серверная часть приложения (Node.js + Express)
-├── frontend/     # Клиентская часть приложения (React + Vite)
-├── shared/       # Общие типы и утилиты
-├── .env          # Конфигурация окружения
-├── Dockerfile    # Настройки контейнера
-├── Makefile      # Утилиты для управления проектом
-└── docker-compose.yml # Настройки контейнеризации
+├── backend/            # Backend application (Node.js + Express)
+├── frontend/           # Frontend application (React + Vite)
+├── shared/             # Shared types and utilities
+├── .env                # Environment configuration
+├── Dockerfile          # Container build configuration
+├── Makefile            # Common project commands
+└── docker-compose.yml  # Service orchestration
 ```
 
-## Установка и запуск
+## Getting Started
 
-### Через Docker (рекомендуется)
+### Run with Docker
 
-1. Клонируйте репозиторий:
+1. Clone the repository:
 
    ```bash
    git clone <repository-url>
    cd sio-twitch
    ```
 
-2. Запустите проект с помощью Docker Compose:
+2. Start the project:
 
    ```bash
    make init
    ```
 
-   Или вручную:
+   Or run Docker Compose manually:
 
    ```bash
    docker compose build
    docker compose up -d
    ```
 
-3. Откройте веб-интерфейс в браузере:
-   ```
+3. Open the web UI:
+
+   ```text
    http://localhost:4173
    ```
 
-### Управление через Makefile
+## Makefile Commands
 
-- `make build` - сборка контейнеров
-- `make up` - запуск контейнеров
-- `make down` - остановка контейнеров
-- `make restart` - перезапуск контейнеров
-- `make init` - полная инициализация (down + build + up)
+- `make build` - build the services
+- `make up` - start the services
+- `make down` - stop the services and remove containers and volumes
+- `make restart` - restart the services
+- `make init` - run `down`, `build`, and `up`
 
-## Порты и сервисы
+## Ports and Services
 
-- **3000**: REST API (backend)
-- **4173**: Веб-интерфейс (frontend)
-- **1935**: RTMP сервер
-- **8554**: RTSP сервер
+- **3000**: backend REST API
+- **4173**: frontend web UI
+- **1935**: RTMP server
+- **8554**: RTSP server
 - **8888**: HLS
 - **8889**: WebRTC
 - **9997**: MediaMTX API
 
-Порты конфигурируются в файле `.env`.
+Ports are configurable through the `.env` file.
 
-## Настройка OBS Studio
+## Recommended OBS Studio Settings
 
-Для обеспечения оптимальной совместимости с MediaMTX и корректного отображения трансляции в веб-интерфейсе, рекомендуется использовать следующие настройки в OBS Studio:
+To keep the stream compatible with MediaMTX and ensure stable playback in the web interface, use the following OBS Studio settings.
 
-1. В разделе **Настройки → Вывод**:
-   - Выберите режим вывода: **Расширенный**
-   - В настройках стрима установите кодировщик: **Software (x264)**
-   - Рекомендуемый битрейт: **2500-3500 Kbps**
-   - Установите интервал ключевых кадров: **2 секунды**
-   - Используйте профиль: **Main**
-   - Preset: **veryfast** или **faster**
+1. In **Settings -> Output**:
+   - Set **Output Mode** to **Advanced**
+   - Use **Software (x264)** as the stream encoder
+   - Recommended bitrate: **2500-3500 Kbps**
+   - Set **Keyframe Interval** to **2 seconds**
+   - Use the **Main** profile
+   - Use the **veryfast** or **faster** preset
 
-2. В разделе **Настройки → Видео**:
-   - Рекомендуемое разрешение вывода: **1280x720** или **1920x1080**
-   - FPS: **30** или **60**
+2. In **Settings -> Video**:
+   - Recommended output resolution: **1280x720** or **1920x1080**
+   - FPS: **30** or **60**
 
-Эти настройки обеспечивают стабильную работу потока и предотвращают проблемы с воспроизведением HLS в приложении.
+These settings help avoid playback issues, especially for HLS output in the application.
 
-## Лицензия
+## License
 
 ISC
